@@ -4,6 +4,6 @@ session_start(); // à mettre tout en haut du fichier .php, cette fonction propr
 session_destroy();
 
 mysqli_close($connexion);
-header('Location: login.php');
+header('Location: index.php');
 
 ?>

@@ -81,9 +81,9 @@ include("../header.php");
       <label for="validationTooltip05">Role utilisateur</label>
         <select name="role" class="custom-select custom-select-sm">
       <option selected>Selectionner son role</option>
-      <option value="1">Administateur</option>
+      <option value="1">Visiteur</option>
       <option value="2">Comptable</option>
-      <option value="3">Visiteur</option>
+      <option value="3">Admin</option>
     </select>
 
     </div>

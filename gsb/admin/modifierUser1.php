@@ -1,17 +1,19 @@
 <?php
 include('../header.php');
 include("../pdo.php");
+include("../parametre.php");
 
 
-if($_SESSION['role'] != 1 or !$_SESSION['id_user'])
+if($_SESSION['role'] != 3 or !$_SESSION['id_user'])
 {
-    header('Location: ../login.php');
+    header('Location: ../index.php');
+
     exit();
 }
 
 $id = $_GET['id'];
 
-$Requete = $connexion1->query("SELECT * FROM utilisateur WHERE id = '".$id."'");
+$Requete = $connexion1->query("SELECT utilisateur.* , role.libelle FROM utilisateur INNER JOIN role ON role.id = utilisateur.id_role WHERE utilisateur.id = '".$id."'");
 $ligne = $Requete->fetch();
 
 
@@ -23,6 +25,7 @@ $mdp = $ligne['mdp'];
 $adresse = $ligne['adresse'];
 $cp = $ligne['cp'];
 $ville = $ligne['ville'];
+$role = $ligne['libelle'];
 $id_role = $ligne['id_role'];
 
 
@@ -102,7 +105,7 @@ $id_role = $ligne['id_role'];
 
       <label for="validationTooltip05">Role utilisateur</label>
         <select name="role" class="custom-select custom-select-sm">
-      <option selected> <?php echo $ligne['id_role'] ?> </option>
+      <option selected> <?php echo $role ?> </option>
       <option value="1">Administateur</option>
       <option value="2">Comptable</option>
       <option value="3">Visiteur</option>
@@ -123,9 +126,10 @@ $id_role = $ligne['id_role'];
 
 
 <?php
-if(isset($_POST['nom']) && isset($_POST['prenom']) && isset($_POST['login']) && isset($_POST['mdp']) && isset($_POST['adresse']) && isset($_POST['cp']) && isset($_POST['ville']) && isset($_POST['role'])){
 
-  $nom_pelo = $_POST['nom'];
+if (isset($_POST['valider'])){
+
+  $nom_user = $_POST['nom'];
   $prenom_user = $_POST['prenom'];
   $login = $_POST['login'];
   $mdp = $_POST['mdp'];
@@ -134,17 +138,17 @@ if(isset($_POST['nom']) && isset($_POST['prenom']) && isset($_POST['login']) && 
   $ville = $_POST['ville'];
   $id_role = $_POST['role'];
 
-  $requete = $connexion1->prepare('UPDATE `utilisateur` SET `nom`=:nom,`prenom`=:prenom,`login`=:login,`mdp`=:mdp, `adresse`=:adresse, `cp`=:cp, `ville`=:ville, `id_role`=:role WHERE id =:id');
+  $requete = $connexion1->prepare("UPDATE `utilisateur` SET `nom`='".$nom_user."',`prenom`='".$prenom_user."', `adresse`='".$adresse."', `ville`='".$ville."', `cp`='".$cp."',`login`='".$login."',`mdp`='".$mdp."', `id_role`='".$id_role."' WHERE id = '".$id."' ");
 
 $requete->bindparam(':nom',$nom_pelo);
 $requete->bindparam(':prenom',$prenom_user);
+$requete->bindparam(':adresse',$adresse);
+$requete->bindparam(':ville',$ville);
+$requete->bindparam(':cp',$cp);
 $requete->bindparam(':login',$login);
 $requete->bindparam(':mdp',$mdp);
-$requete->bindparam(':adresse',$adresse);
-$requete->bindparam(':cp',$cp);
-$requete->bindparam(':ville',$ville);
 $requete->bindparam(':role',$id_role);
-$requete->bindparam(':id',$_GET['id']);
+$requete->bindparam(':id',$id);
 $requete->execute();
 
   header('Location: index.php');

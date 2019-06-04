@@ -7,14 +7,14 @@ include('../pdo.php');
 
 if($_SESSION['role'] != 1 or !$_SESSION['id_user'])
 {
-    header('Location: ../login.php');
+    header('Location: ../index.php');
     exit();
 }
 
 
 $id_user = $_SESSION['id_user'];
 
-$Requete = mysqli_query($connexion,"SELECT * FROM Utilisateur WHERE id = '".$id_user."'");
+$Requete = mysqli_query($connexion,"SELECT * FROM utilisateur WHERE id = '".$id_user."'");
 $ligne = mysqli_fetch_assoc($Requete);
 
 $nom_user = $ligne['nom'];
@@ -87,7 +87,7 @@ $prenom_user = $ligne['prenom'];
 
                                   <td><?php echo $test['libelle'];?></td>
 
-                                  <td> <?php echo"<a class='btn btn-danger' href='details.php?id=".$test['id']."'> Détails de la fiche </a>"; ?> </td>
+                                  <td> <?php echo"<a class='btn btn-danger' href='details.php?id=".$test['id']."'> Détail de la fiche </a>"; ?> </td>
 
 
                                 </tr>

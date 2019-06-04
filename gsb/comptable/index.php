@@ -5,10 +5,17 @@ include('../pdo.php');
 
 if($_SESSION['role'] != 2 or !$_SESSION['id_user'])
 {
-    header('Location: ../login.php');
+    header('Location: ../index.php');
     exit();
 }
 
+$id_user = $_SESSION['id_user'];
+$leMois = date("n");
+$Requete = mysqli_query($connexion,"SELECT * FROM utilisateur WHERE id = '".$id_user."'");
+$ligne = mysqli_fetch_assoc($Requete);
+
+$nom_user = $ligne['nom'];
+$prenom_user = $ligne['prenom'];
 
 
 
@@ -51,21 +58,36 @@ if($_SESSION['role'] != 2 or !$_SESSION['id_user'])
                               <tr>
 
                                 <th scope="col">Mois</th> 
-                                <th scope="col">Année</th>
-                                <th scope="col">Status</th>     
+                                <th scope="col">Année</th>                                
+                                <th scope="col">Nom</th> 
+                                <th scope="col">Prénom</th>
+                                <th scope="col">Status</th>      
 
                               </tr>
                             </thead>
                             <tbody>
                            <?php
-                           $reponse1 = $connexion1->query("SELECT * FROM fiche_frais WHERE etat_id = '1' ORDER BY `annee` DESC ,`mois` DESC "); 
+                           $reponse1 = $connexion1->query("SELECT fiche_frais.*, etat.libelle FROM fiche_frais INNER JOIN etat ON etat.id = fiche_frais.etat_id WHERE etat.id = 3 AND mois != $leMois ORDER BY `annee` DESC ,`mois` DESC "); 
+
+
 
                                 while ($fiche = $reponse1->fetch()){
+
+                                  $rqt = $connexion1->query("SELECT nom, prenom FROM utilisateur WHERE id='".$fiche['utilisateur_id']."' ");
+                                  $uti = $rqt->fetch();
                                 ?>
                                 <tr>
                                   <td><?php echo $fiche['mois'];?></td>
-                                  <td><?php echo $fiche['annee'];?></td>
-                                  <td>En attente</td>
+                                  <td><?php echo $fiche['annee'];?></td>                                  
+                                  <td><?php echo $uti['nom'];?></td>
+                                  <td><?php echo $uti['prenom'];?></td>
+                                  <td><?php echo $fiche['libelle'];?></td>
+                                  <td>
+                                    <?php 
+                                      echo "<a class='btn btn-danger' href='detailsComptable.php?id=".$fiche['id']."'> Verifier le détail </a>";
+                                    ?>
+                                  </td>
+                                  
 
 
                                   <tr>

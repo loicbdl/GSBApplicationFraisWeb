@@ -3,9 +3,9 @@ session_start();
 
 include("../pdo.php");
 
-if($_SESSION['role'] != 1 or !$_SESSION['id_user'])
+if($_SESSION['role'] != 3 or !$_SESSION['id_user'])
 {
-    header('Location: ../login.php');
+	header('Location: ../index.php');
     exit();
 }
 

@@ -6,15 +6,16 @@ include('../pdo.php');
 
 if($_SESSION['role'] != 1 or !$_SESSION['id_user'])
 {
-    header('Location: ../login.php');
+    header('Location: ../index.php');
     exit();
 }
 
 $id_user = $_SESSION['id_user'];
 
 
-$Requete = mysqli_query($connexion,"SELECT * FROM Utilisateur WHERE id = '".$id_user."'");
-$ligne = mysqli_fetch_assoc($Requete);
+$requete=$connexion1->prepare("SELECT * FROM utilisateur WHERE id = '".$id_user."'");
+$requete->execute();
+$ligne= $requete->fetch();
 
 $nom_user = $ligne['nom'];
 $prenom_user = $ligne['prenom'];
@@ -33,27 +34,70 @@ $anneeFiche = $donnees['annee'];
 $idFiche = $donnees['id'];
 
 
-  /*if($currentM != $moisFiche or $currentY != $anneeFiche){
+  if($currentM != $moisFiche or $currentY != $anneeFiche){
 
-    $new = $connexion1->query("INSERT INTO fiche_frais VALUES (NULL,'".$currentM."','".$currentY."',1,'".$id_user."')");
+    $new1 = $connexion1->query("INSERT INTO fiche_frais VALUES (NULL,'".$currentM."','".$currentY."',3,'".$id_user."')");
 
-  }*/
+  }
+
+// AJOUT FRAIS
+
+  if (isset($_POST['nbrepas'])) {
+
+
+    $qte = $_POST['nbrepas'];
+
+    if ($qte != 0 ) 
+    {
+
+      $new2 = $connexion1->query("INSERT INTO detail_frais_forfait VALUES (NULL, '3', '".$qte."','".$idFiche."',3)");
+      header('Location: index.php');
+      
+    }
+      
+  }
+
+  if (isset($_POST['nuitee'])) {
+
+    $qte_nuitee = $_POST['nuitee'] ;
+    
+    if ($qte_nuitee != 0 ) 
+    {
+
+      $new3 = $connexion1->query("INSERT INTO detail_frais_forfait VALUES (NULL, '1', '".$qte_nuitee."','".$idFiche."',3 )");
+      header('Location: index.php');
+
+    }
+
+  }
+
+  if (isset($_POST['transport'])) {
+
+    $qte_transport = $_POST['transport'] ;
+
+    if ($qte_transport != 0 ) 
+    {
+
+      $new4 = $connexion1->query("INSERT INTO detail_frais_forfait VALUES (NULL, '2', '".$qte_transport."','".$idFiche."',3 )");
+      header('Location: index.php');
+      
+    }
+      
+      
+  }
+
+  if(isset($_POST['libelle']) && isset($_POST['montant'])) {
+    $lib = $_POST['libelle'];
+    $montant = $_POST['montant'];
+
+    $new5 = $connexion1->query("INSERT INTO detail_frais_non_forfait  VALUES (NULL, '".$lib."','".$montant."', '".$idFiche."',3)");
+    header('Location: index.php');
+  }
 
 
 ?>
 
   <body>
-
-
-<style>
-.novue{
-    display: none;
-}
-
-.vue{
-    display: block;
-}  
-</style>
 
 
          <div class="pos-f-t">
@@ -76,9 +120,9 @@ $idFiche = $donnees['id'];
         
                 <div id="block1" class="col col-sm-6 col-md-5 col-lg-5 mt-5 mx-auto p-3 h-75  rounded" style="border : 1px solid grey; background: #dfe4ea;">
                     <h1>Mes activités</h1> 
-
                     <a href="lesfiches.php"><span class="text-muted">Consulter les mois précedents</span></a>
                     <p><span class="float-right text-muted">En cours : <?php echo "$leMois"; ?> / <?php echo "$currentY"; ?> </span></p>
+                    <h1>Frais forfait</h1> 
                     <table class="table table-striped">
                             <thead>
                               <tr>
@@ -102,7 +146,6 @@ $idFiche = $donnees['id'];
                                ?>
                                <tr>
                                   <td><?php echo $test['libelle'];?></td>
-
                                   <td><?php echo $test['quantite'];?></td>     
                                   <td><?php echo $test['montant'] * $test['quantite'];?></td>
                                   <td><?php echo $eta['libelle'];?></td>
@@ -110,6 +153,42 @@ $idFiche = $donnees['id'];
 
                                 </tr>
                                 <?php }
+
+                                ?>
+
+
+                            </tbody>
+                          </table>
+
+                                    <h1>Frais hors forfait</h1>
+                          <table class="table table-striped">
+                            <thead>
+                              <tr>
+                                <th scope="col">Libellé</th>                               
+                                <th scope="col">Montant</th>
+                                <th scope="col">Etat</th>
+
+
+                                
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <?php
+
+
+                                $reponse2 = $connexion1->query("SELECT detail_frais_non_forfait.*, etat.libelle AS libelle2 FROM detail_frais_non_forfait  INNER JOIN etat ON etat.id = detail_frais_non_forfait.etat_id WHERE fiche_frais_id = '".$idFiche."'"); 
+                                while ($detail_ = $reponse2->fetch()){
+                               ?>
+                               <tr>
+
+                                  <td><?php echo $detail_['libelle'];?></td>     
+                                  <td><?php echo $detail_['montant'];?> € </td>
+                                  <td><?php echo $detail_['libelle2']?></td>
+
+                                </tr>
+                                <?php                             
+
+                              }
 
                                 ?>
 
@@ -133,11 +212,21 @@ $idFiche = $donnees['id'];
                     </div>   
                 </div>
 
-                <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<style>
+.novue{
+    display: none;
+}
+
+.vue{
+    display: block;
+}  
+</style>
+
+  <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+        <h5 class="modal-title" id="exampleModalLabel">Ajout de votre frais</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -155,23 +244,11 @@ $idFiche = $donnees['id'];
         <button type = "submit" class="btn btn-primary" name = "Fraisfix">Enregistrer</button>
       </div>
       <div id ="Restauration" class="novue" >
-        <input type="number" class="form-control" aria-describedby="usernameHelp" placeholder="Nombre de repas midi" name ="repas_midi">
-        <input type="number" class="form-control" aria-describedby="usernameHelp" placeholder="Nombre de repas soir" name ="repas_soir">
+        <input type="number" class="form-control" aria-describedby="usernameHelp" placeholder="Nombre de repas" name ="nbrepas">
         <button type = "submit" class="btn btn-primary" name = "Fraisfix">Enregistrer</button>
       </div>
-      <div id ="Transport" class="novue" >
-        <select name="carburant" class="custom-select custom-select-sm" id ="liste2" onchange="carbu()" >
-          <option selected>Selectionner votre carburant</option>
-          <option value="1">Essence</option>
-          <option value="2">Diesel</option>
-        </select>
-      </div>
-      <div id ="Escence" class="novue">
-        <input type="number" class="form-control" aria-describedby="usernameHelp" placeholder="Nombre de km " name ="transport_essence">
-        <button type = "submit" class="btn btn-primary" name = "Fraisfix">Enregistrer</button>
-      </div>
-      <div id ="Diesel"class="novue">
-        <input type="number" class="form-control" aria-describedby="usernameHelp" placeholder="Nombre de km" name ="transport_diesel">
+      <div id ="Transport" class="novue">
+        <input type="number" class="form-control" aria-describedby="usernameHelp" placeholder="Nombre de km " name ="transport">
         <button type = "submit" class="btn btn-primary" name = "Fraisfix">Enregistrer</button>
       </div>
       </form>
@@ -194,7 +271,7 @@ $idFiche = $donnees['id'];
         </button>
       </div>
       <div class="modal-body">
-        <form action ="fichesHorsForfait.php" method="post">
+        <form action ="" method="post">
   <div class="form-group">
     <label for="exampleInputLibelle">Libelle</label>
     <input type="text" class="form-control" id="exampleInputtext1" aria-describedby="emailHelp" placeholder="Libelle" name ="libelle">
@@ -260,86 +337,15 @@ function fix(){
 
 </script>
 
-<?php
 
 
-
-
-
-
-  
-  if($currentM != $moisFiche or $currentY != $anneeFiche){
-
-    $new = $connexion1->query("INSERT INTO fiche_frais VALUES (NULL,'".$currentM."','".$currentY."',1,'".$id_user."')");
-
-  }
-
-
-  if (isset($_POST['repas_midi'])) {
-
-    $qte_midi = $_POST['repas_midi'] ;
-    $prix_midi = $qte_midi* 15;
-
-    $new2 = $connexion1->query("INSERT INTO details_frais_forfait VALUES (NULL ,'".$qte_midi."','".$prix_midi."',2,'".$idFiche."')");
-     
-  }
-
-  if (isset($_POST['repas_soir'])) {
-
-    $qte_soir = $_POST['repas_soir']; 
-    $prix_soir = $qte_soir*20; 
-
-
-    $new3 = $connexion1->query("INSERT INTO details_frais_forfait VALUES (NULL, '".$qte_soir."','".$prix_soir."',2,'".$idFiche."' )");
-      
-      
-  }
-
-  elseif (isset($_POST['nuitee'])) {
-
-    $qte_nuit = $_POST['nuitee'] ;
-    $prix_nuit = $qte_nuit * 20;
-
-    $new4 = $connexion1->query("INSERT INTO details_frais_forfait VALUES (NULL, '".$qte_nuit."','".$prix_nuit."' ,1,'".$idFiche."' )");
-      
-      
-  }
-
-  elseif (isset($_POST['transport_diesel'])) {
-
-    $qte_diesel = $_POST['transport_diesel'] ;
-    $prix_diesel = $qte_diesel *1.20;
-
-    $new5 = $connexion1->query("INSERT INTO details_frais_forfait VALUES (NULL, '".$qte_diesel."','".$prix_diesel."',3,'".$idFiche."' )");
-    header('location = visiteur/index.php');
-      
-      
-  }
-
-  elseif (isset($_POST['transport_essence'])) {
-
-    $qte_essence = $_POST['transport_essence'] ;
-    $prix_essence = $qte_essence * 1.40 ;
-
-    $new6 = $connexion1->query("INSERT INTO details_frais_forfait VALUES (NULL, '".$qte_essence."','".$prix_essence."' ,4,'".$idFiche."')"); 
-    header('location = visiteur/index.php');    
-      
-  }
-
-  if(isset($_POST['libelle']) && isset($_POST['montant'])) {
-    $lib = $_POST['libelle'];
-    $mont = $_POST['montant'];
-
-    $new7 = $connexion1->query("INSERT INTO details_frais_non_forfait  VALUES ( '".$lib."','".$mont."', '".$idFiche."')");
-    
-  }
-
-
-
+<?php 
 
 
 
 
 include('../footer.php');
+
+
 
 ?>

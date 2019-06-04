@@ -19,7 +19,7 @@ if(isset($_POST['nom']) && isset($_POST['prenom'])&& isset($_POST['login'])&& is
 	$ddate = date("Y-m-d");
 
 
-    $recup = $connexion1->prepare("INSERT INTO `utilisateur`(`id`, `nom`, `prenom`, `login`, `mdp`, `adresse`, `cp`, `ville`, `dateEmbauche`, `id_role`) VALUES (NULL,'".$nom."','".$prenom."','".$login."','".$mdp."','".$adresse."','".$cp."','".$ville."','".$ddate."','".$role."')");
+    $recup = $connexion1->prepare("INSERT INTO `utilisateur`(`id`, `nom`, `prenom`,`adresse`, `ville`,`cp`,`dateEmbauche`, `login`, `mdp`, `id_role`) VALUES (NULL,'".$nom."','".$prenom."','".$adresse."','".$ville."','".$cp."','".$ddate."','".$login."','".$mdp."','".$role."')");
 
 
 	$recup->execute();

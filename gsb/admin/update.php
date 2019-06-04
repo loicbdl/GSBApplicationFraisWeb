@@ -8,7 +8,9 @@ session_start();
 
 if($_SESSION['role'] != 1 or !$_SESSION['id_user'])
 {
-    header('Location: ../login.php');
+    header('Location: ../index.php');
+
+
     exit();
 }
 
@@ -27,10 +29,11 @@ $id_role = $_POST['id_role'];
 
 	$requete=$connexion->prepare ("UPDATE utilisateur SET nom = '".$nom_user."', prenom = '".$prenom_user."', login = '".$login."', mdp = '".$mdp."', adresse = '".$adresse."', cp = '".$cp."', ville = '".$ville."', id_role = '".$id_role."' WHERE id = '".$id_user."' ");
 	
-			
+	
+	$requete->execute();		
 	header('Location: index.php');
 			
-	$requete->execute();
+	
 
 ?>
 

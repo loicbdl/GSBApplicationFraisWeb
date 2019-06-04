@@ -3,13 +3,13 @@ include('../header.php');
 
 if($_SESSION['role'] != 3 or !$_SESSION['id_user'])
 {
-    header('Location: ../login.php');
+    header('Location: ../index.php');
     exit();
 }
 
 $id_user = $_SESSION['id_user'];
 
-$Requete = mysqli_query($connexion,"SELECT * FROM Utilisateur WHERE id = '".$id_user."'");
+$Requete = mysqli_query($connexion,"SELECT * FROM utilisateur WHERE id = '".$id_user."'");
 $ligne = mysqli_fetch_assoc($Requete);
 
 $nom_user = $ligne['nom'];
@@ -35,8 +35,8 @@ $prenom_user = $ligne['prenom'];
         </div>
 
         <?php
-        $requete = "SELECT Utilisateur.*, role.libelle FROM Utilisateur
-                    INNER JOIN role ON role.id = Utilisateur.id_role";
+        $requete = "SELECT utilisateur.*, role.libelle FROM utilisateur
+                    INNER JOIN role ON role.id = utilisateur.id_role";
            $resultat = mysqli_query($connexion,$requete);
 /*            $ligne = mysqli_fetch_assoc($resultat);
             echo '<pre>',print_r($ligne),'</pre>';
@@ -78,7 +78,7 @@ $prenom_user = $ligne['prenom'];
                                   <td><?php echo $ligne['ville'];?></td>
                                   <td>
                                     <?php 
-                                      echo "<a class='btn btn-danger' href='supprimerUser.php?id=".$ligne['id']."'> Supprimer</a>";
+                                      echo "<a class='btn btn-danger' onClick= 'return confirmation();' href='supprimerUser.php?id=".$ligne['id']."'> Supprimer</a>";
                                       echo "<a class='btn btn-warning' href='modifierUser1.php?id=".$ligne['id']."'> Modifier</a>";
                                     ?>
                                   </td>
@@ -98,6 +98,21 @@ $prenom_user = $ligne['prenom'];
               </div>
             
         </div>
+
+  <script>
+    
+  function confirmation()
+  {
+    var x = confirm("Appuyer sur 'OK' pour valider");
+    if (x==true)
+    {
+      return true;
+    }else
+    {
+      return false;
+    }
+  }
+</script>
 
 <?php 
 include('../footer.php');

@@ -7,7 +7,7 @@ include("../pdo.php");
 
 if($_SESSION['role'] != 1 or !$_SESSION['id_user'])
 {
-    header('Location: ../login.php');
+    header('Location: ../index.php');
     exit();
 }
 
@@ -16,7 +16,7 @@ if($_SESSION['role'] != 1 or !$_SESSION['id_user'])
 $id_user = $_SESSION['id_user'];
 $id = $_GET['id'];
 
-$Requete = mysqli_query($connexion,"SELECT * FROM Utilisateur WHERE id = '".$id_user."'");
+$Requete = mysqli_query($connexion,"SELECT * FROM utilisateur WHERE id = '".$id_user."'");
 $ligne = mysqli_fetch_assoc($Requete);
 
 $nom_user = $ligne['nom'];
@@ -48,7 +48,7 @@ $idFiche = $donnees['id'];
 	         			<div id="block1" class="col col-sm-6 col-md-5 col-lg-5 mt-5 mx-auto p-3 h-75  rounded" style="border : 1px solid grey; background: #dfe4ea;">
 
 
-                <h1>Frait forfait</h1>  
+                <h1>Frais forfait</h1>  
 
                 <?php 
 
@@ -57,19 +57,14 @@ $idFiche = $donnees['id'];
 
 				  if($moisFiche == $currentM and $currentY == $anneeFiche){
 
-				    echo"<a class='btn btn-danger' href='ajoutfrais.php?id=".$idFiche."'> Ajouter un frais </a>";
+				    echo"(En cours)";
 
 				  }else{
-				  	echo "(Fiche cloturé, ajout impossible)";
+				  	echo "(Fiche cloturé)";
 				  }
-
-
 
                  ?>
 
-
-
-                    
                     <table class="table table-striped">
                             <thead>
                               <tr>
